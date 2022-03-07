@@ -7,7 +7,7 @@ import (
 	"regexp"
 )
 
-func ValidateTagList(regex string, tags ...string) error {
+func ValidateTags(regex string, tags ...string) error {
 	if len(tags) == 0 {
 		return errors.New("requires at least one tag")
 	}
@@ -27,7 +27,7 @@ func ValidateTagList(regex string, tags ...string) error {
 	return nil
 }
 
-func ValidateFileAndDir(paths ...string) error {
+func ValidatePaths(paths ...string) error {
 	if len(paths) == 0 {
 		return errors.New("requires at least one file or directory to tag")
 	}

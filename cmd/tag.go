@@ -47,11 +47,11 @@ func validateArgs(_ *cobra.Command, args []string) error {
 
 	var err error
 
-	if err = core.ValidateTagList(validTagRegex, tags...); err != nil {
+	if err = core.ValidateTags(validTagRegex, tags...); err != nil {
 		return err
 	}
 
-	if err = core.ValidateFileAndDir(args[1:]...); err != nil {
+	if err = core.ValidatePaths(args[1:]...); err != nil {
 		return err
 	}
 
