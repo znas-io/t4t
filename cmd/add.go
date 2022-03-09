@@ -10,48 +10,54 @@ import (
 )
 
 const (
-	short         = "Adds tags to one or more files or directories"
-	long          = ``
-	validTagRegex = "^[a-zA-Z0-9-]+$"
+	short = "Adds tags to one or more files or directories"
+	long  = ``
 )
 
 var (
-	arrayTags = make([]string, 0)
-	sliceTags = make([]string, 0)
-
 	addCmd = &cobra.Command{
 		Use:   "add",
 		Short: short,
 		Long:  long,
-		Args:  cobra.MatchAll(cobra.MinimumNArgs(1), validateArgs),
-		Run: func(cmd *cobra.Command, args []string) {
-			tags := inputTags()
-			fmt.Println(tags)
-		},
+		Args:  cobra.MatchAll(cobra.MinimumNArgs(1), parseAndValidateInput),
+		Run:   run,
 	}
 )
 
 func init() {
 	rootCmd.AddCommand(addCmd)
 
-	addCmd.Flags().StringArrayVarP(&arrayTags, "tag", "t", make([]string, 0), "-t foo -t bar")
-	addCmd.Flags().StringSliceVar(&sliceTags, "tags", make([]string, 0), "--tags foo,bar")
+	addCmd.Flags().StringArrayVarP(&arrayTagsInput, "tag", "t", make([]string, 0), "-t foo -t bar")
+	addCmd.Flags().StringSliceVar(&sliceTagsInput, "tags", make([]string, 0), "--tags foo,bar")
 }
 
-func inputTags() []string {
-	return append(arrayTags, sliceTags...)
+func run(*cobra.Command, []string) {
+	for _, i := range tagsMap {
+		fmt.Println(i.FileString())
+	}
 }
 
-func validateArgs(_ *cobra.Command, args []string) error {
-	var err error
+func parseAndValidateInput(_ *cobra.Command, args []string) error {
+	tags := append(arrayTagsInput, sliceTagsInput...)
 
-	if err = core.ValidateTags(validTagRegex, inputTags()...); err != nil {
-		return err
+	for _, tag := range tags {
+		for _, path := range args {
+			var i *core.Tag
+			var err error
+
+			if i, err = core.NewTag(tag, path); err != nil {
+				return err
+			}
+
+			if t, ok := tagsMap[i.GetID()]; ok {
+				if t.GetTag() != tag || t.GetPath() != path {
+					return core.ErrUnthinkable(tag, path, t.GetTag(), t.GetPath())
+				}
+				continue
+			}
+
+			tagsMap[i.GetID()] = i
+		}
 	}
-
-	if err = core.ValidatePaths(args...); err != nil {
-		return err
-	}
-
 	return nil
 }
