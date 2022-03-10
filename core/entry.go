@@ -14,7 +14,7 @@ const (
 )
 
 type (
-	Tag struct {
+	Entry struct {
 		id   string
 		tag  string
 		path string
@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func NewTag(tag, path string) (*Tag, error) {
+func NewTag(tag, path string) (*Entry, error) {
 	if tag == "" {
 		return nil, ErrTagCannotBeEmpty
 	}
@@ -50,7 +50,7 @@ func NewTag(tag, path string) (*Tag, error) {
 
 	path = abs
 
-	i := &Tag{
+	i := &Entry{
 		tag:  tag,
 		path: path,
 	}
@@ -64,41 +64,25 @@ func NewTag(tag, path string) (*Tag, error) {
 	return i, nil
 }
 
-func (t *Tag) GetID() string {
-	return t.id
+func (e *Entry) String() string {
+	return fmt.Sprintf("%v %v", e.tag, e.path)
 }
 
-func (t *Tag) GetTag() string {
-	return t.tag
+func (e *Entry) FileString() string {
+	return fmt.Sprintf("%v %v %v %v", e.id, e.t, e.tag, e.path)
 }
 
-func (t *Tag) GetPath() string {
-	return t.path
+func (e *Entry) generateID() {
+	data := md5.Sum([]byte(fmt.Sprintf("%v:%v", e.tag, e.path)))
+
+	e.id = fmt.Sprintf("%x", data)
 }
 
-func (t *Tag) GetType() string {
-	return t.t
-}
-
-func (t *Tag) String() string {
-	return fmt.Sprintf("%v %v", t.tag, t.path)
-}
-
-func (t *Tag) FileString() string {
-	return fmt.Sprintf("%v %v %v %v", t.id, t.t, t.tag, t.path)
-}
-
-func (t *Tag) generateID() {
-	data := md5.Sum([]byte(fmt.Sprintf("%v:%v", t.tag, t.path)))
-
-	t.id = fmt.Sprintf("%x", data)
-}
-
-func (t *Tag) validatePathAndGenerateType() error {
+func (e *Entry) validatePathAndGenerateType() error {
 	var file *os.File
 	var err error
 
-	if file, err = os.Open(t.path); err != nil {
+	if file, err = os.Open(e.path); err != nil {
 		return err
 	}
 
@@ -111,10 +95,10 @@ func (t *Tag) validatePathAndGenerateType() error {
 		return err
 	}
 
-	t.t = "file"
+	e.t = "file"
 
 	if info.IsDir() {
-		t.t = "dir"
+		e.t = "dir"
 	}
 
 	return nil

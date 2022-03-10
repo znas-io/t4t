@@ -32,7 +32,7 @@ func init() {
 }
 
 func run(*cobra.Command, []string) {
-	for _, i := range tagsMap {
+	for _, i := range sortedTagsMap.GetEntries() {
 		fmt.Println(i.FileString())
 	}
 }
@@ -42,21 +42,16 @@ func parseAndValidateInput(_ *cobra.Command, args []string) error {
 
 	for _, tag := range tags {
 		for _, path := range args {
-			var i *core.Tag
+			var i *core.Entry
 			var err error
 
 			if i, err = core.NewTag(tag, path); err != nil {
 				return err
 			}
 
-			if t, ok := tagsMap[i.GetID()]; ok {
-				if t.GetTag() != tag || t.GetPath() != path {
-					return core.ErrUnthinkable(tag, path, t.GetTag(), t.GetPath())
-				}
-				continue
+			if err = sortedTagsMap.Add(i); err != nil {
+				return err
 			}
-
-			tagsMap[i.GetID()] = i
 		}
 	}
 	return nil
