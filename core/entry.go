@@ -22,7 +22,7 @@ type (
 	}
 )
 
-func NewTag(tag, path string) (*Entry, error) {
+func NewEntry(tag, path string) (*Entry, error) {
 	if tag == "" {
 		return nil, ErrTagCannotBeEmpty
 	}
@@ -64,12 +64,20 @@ func NewTag(tag, path string) (*Entry, error) {
 	return i, nil
 }
 
+func (e *Entry) GetID() string {
+	return e.id
+}
+
+func (e *Entry) GetTagPartition() string {
+	return e.tag[0:1]
+}
+
 func (e *Entry) String() string {
 	return fmt.Sprintf("%v %v", e.tag, e.path)
 }
 
 func (e *Entry) FileString() string {
-	return fmt.Sprintf("%v %v %v %v", e.id, e.t, e.tag, e.path)
+	return fmt.Sprintf("%v %v %v %v%v", e.id, e.t, e.tag, e.path, "\r\n")
 }
 
 func (e *Entry) generateID() {

@@ -15,6 +15,7 @@ var (
 		return errors.New(fmt.Sprintf(
 			"the unthinkable has happened, the same ID was generated for combination %v %v and %v %v, please report this on github", tag0, path0, tag1, path1))
 	}
-	ErrKeyCannotBeEmpty = errors.New("key cannot be empty")
-	ErrEntryCannotBeNil = errors.New("entry cannot be nil")
+	ErrLineCannotBeEmpty = errors.New("line cannot be empty")
+	ErrEntryCannotBeNil  = errors.New("entry cannot be nil")
+	ErrInvalidLine       = errors.New("invalid line")
 )

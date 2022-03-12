@@ -14,7 +14,7 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var (
 	cfgFile string
-	
+
 	rootCmd = &cobra.Command{
 		Use:   "t4t",
 		Short: "Helps organize filesystem using tags",
@@ -30,8 +30,7 @@ to quickly create a Cobra application.`,
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
