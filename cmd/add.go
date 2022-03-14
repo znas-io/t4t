@@ -45,7 +45,7 @@ func run(*cobra.Command, []string) {
 			partition = p
 
 			if f != nil {
-				err = f.Close()
+				_ = f.Close()
 				cobra.CheckErr(err)
 			}
 
@@ -54,7 +54,7 @@ func run(*cobra.Command, []string) {
 			}
 
 			if m, err = core.MapFileEntries(f); err != nil {
-				err = f.Close()
+				_ = f.Close()
 				cobra.CheckErr(err)
 			}
 		}
@@ -65,7 +65,7 @@ func run(*cobra.Command, []string) {
 
 		m[e.GetID()] = e
 
-		if _, err = f.WriteString(e.FileString()); err != nil {
+		if _, err = f.WriteString(e.String()); err != nil {
 			cobra.CheckErr(err)
 		}
 	}

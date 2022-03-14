@@ -4,8 +4,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
+)
+
+const (
+	tagIndex  = 0
+	pathIndex = 1
 )
 
 func MapFileEntries(f *os.File) (map[string]*Entry, error) {
@@ -17,24 +23,24 @@ func MapFileEntries(f *os.File) (map[string]*Entry, error) {
 		var isPrefix bool
 		var err error
 
-		if data, isPrefix, err = reader.ReadLine(); data == nil {
+		if data, isPrefix, err = reader.ReadLine(); err == io.EOF {
 			break
-		} else if isPrefix {
-			continue
 		} else if err != nil {
 			return nil, err
+		} else if data == nil || isPrefix {
+			continue
 		}
 
 		split := strings.Split(string(data), " ")
 
-		if len(split) != 4 {
+		if len(split) != 2 {
 			continue
 		}
 
 		var entry *Entry
 
 		// WARNING: If the data in a line is invalid we ignore it and move on
-		if entry, err = NewEntry(split[2], split[3]); err != nil {
+		if entry, err = NewEntry(split[tagIndex], split[pathIndex]); err != nil {
 			continue
 		}
 
@@ -73,7 +79,7 @@ func GetDataFile(partition string) (*os.File, error) {
 		return nil, err
 	}
 
-	if file, err = os.OpenFile(path, os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
+	if file, err = os.OpenFile(path, os.O_APPEND|os.O_RDWR, os.ModeAppend); err != nil {
 		return nil, err
 	}
 

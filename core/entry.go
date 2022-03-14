@@ -50,18 +50,18 @@ func NewEntry(tag, path string) (*Entry, error) {
 
 	path = abs
 
-	i := &Entry{
+	entry := &Entry{
 		tag:  tag,
 		path: path,
 	}
 
-	if err = i.validatePathAndGenerateType(); err != nil {
+	if err = entry.validatePathAndGenerateType(); err != nil {
 		return nil, err
 	}
 
-	i.generateID()
+	entry.generateID()
 
-	return i, nil
+	return entry, nil
 }
 
 func (e *Entry) GetID() string {
@@ -73,11 +73,7 @@ func (e *Entry) GetTagPartition() string {
 }
 
 func (e *Entry) String() string {
-	return fmt.Sprintf("%v %v", e.tag, e.path)
-}
-
-func (e *Entry) FileString() string {
-	return fmt.Sprintf("%v %v %v %v%v", e.id, e.t, e.tag, e.path, "\r\n")
+	return fmt.Sprintf("%v %v\r\n", e.tag, e.path)
 }
 
 func (e *Entry) generateID() {
