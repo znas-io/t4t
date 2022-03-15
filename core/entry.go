@@ -61,8 +61,12 @@ func (e *Entry) GetTagPartition() string {
 	return GetTagPartition(e.tag)
 }
 
-func (e *Entry) String() string {
+func (e *Entry) Stringln() string {
 	return fmt.Sprintf("%v %v\r\n", e.tag, e.path)
+}
+
+func (e *Entry) DetailedStringln() string {
+	return fmt.Sprintf("%v %v %v %v\r\n", e.id, e.t, e.tag, e.path)
 }
 
 func (e *Entry) generateID() {

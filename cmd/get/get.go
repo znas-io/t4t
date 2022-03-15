@@ -34,7 +34,7 @@ func run(*cobra.Command, []string) {
 	var err error
 
 	partition := ""
-	paths := make(map[string]struct{})
+	paths := make(map[string]int)
 
 	for _, tag := range tags {
 		p := core.GetTagPartition(tag)
@@ -65,18 +65,18 @@ func run(*cobra.Command, []string) {
 		}
 
 		for _, entry := range entries {
-			if _, ok = paths[entry.GetPath()]; ok {
-				continue
-			}
-
-			paths[entry.GetPath()] = struct{}{}
+			paths[entry.GetPath()] = paths[entry.GetPath()] + 1
 		}
 	}
 
 	err = f.Close()
 	cobra.CheckErr(err)
 
-	for path, _ := range paths {
+	for path, n := range paths {
+		if n != len(tags) {
+			continue
+		}
+
 		fmt.Println(path)
 	}
 }

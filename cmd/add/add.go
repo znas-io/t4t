@@ -1,6 +1,7 @@
 package add
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/znas-io/t4t/core"
 	"os"
@@ -67,10 +68,12 @@ func run(*cobra.Command, []string) {
 
 		m[e.GetID()] = e
 
-		if _, err = f.WriteString(e.String()); err != nil {
+		if _, err = f.WriteString(e.Stringln()); err != nil {
 			_ = f.Close()
 			cobra.CheckErr(err)
 		}
+
+		fmt.Print(e.DetailedStringln())
 	}
 
 	err = f.Close()
