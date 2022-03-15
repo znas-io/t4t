@@ -5,12 +5,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
-)
-
-const (
-	validTagRegex = "^[a-z0-9][a-z0-9-]+[a-z0-9]$"
 )
 
 type (
@@ -23,23 +17,14 @@ type (
 )
 
 func NewEntry(tag, path string) (*Entry, error) {
-	if tag == "" {
-		return nil, ErrTagCannotBeEmpty
-	}
-
 	if path == "" {
 		return nil, ErrPathCannotBeEmpty
 	}
 
-	tag = strings.ToLower(tag)
-
-	var matched bool
 	var err error
 
-	if matched, err = regexp.MatchString(validTagRegex, tag); err != nil {
+	if tag, err = ValidateTag(tag); err != nil {
 		return nil, err
-	} else if !matched {
-		return nil, ErrInvalidTag(tag, validTagRegex)
 	}
 
 	var abs string
@@ -68,8 +53,12 @@ func (e *Entry) GetID() string {
 	return e.id
 }
 
+func (e *Entry) GetPath() string {
+	return e.path
+}
+
 func (e *Entry) GetTagPartition() string {
-	return e.tag[0:1]
+	return GetTagPartition(e.tag)
 }
 
 func (e *Entry) String() string {

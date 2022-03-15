@@ -55,7 +55,7 @@ func run(*cobra.Command, []string) {
 				cobra.CheckErr(err)
 			}
 
-			if m, err = core.MapFileEntries(f); err != nil {
+			if m, err = core.MapFileEntriesByID(f); err != nil {
 				_ = f.Close()
 				cobra.CheckErr(err)
 			}
@@ -68,6 +68,7 @@ func run(*cobra.Command, []string) {
 		m[e.GetID()] = e
 
 		if _, err = f.WriteString(e.String()); err != nil {
+			_ = f.Close()
 			cobra.CheckErr(err)
 		}
 	}
