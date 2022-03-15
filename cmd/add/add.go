@@ -1,8 +1,5 @@
-package cmd
+package add
 
-/*
-Copyright © 2022 Jose Sanz <znas@znas.io>
-*/
 import (
 	"github.com/spf13/cobra"
 	"github.com/znas-io/t4t/core"
@@ -10,25 +7,30 @@ import (
 )
 
 const (
+	use   = "add"
 	short = "Adds tags to one or more files or directories"
 	long  = ``
 )
 
 var (
-	addCmd = &cobra.Command{
-		Use:   "add",
+	entries        = core.NewSortedEntriesMap()
+	arrayTagsInput = make([]string, 0)
+	sliceTagsInput = make([]string, 0)
+)
+
+func NewCommand() *cobra.Command {
+	c := &cobra.Command{
+		Use:   use,
 		Short: short,
 		Long:  long,
 		Args:  cobra.MatchAll(cobra.MinimumNArgs(1), parseAndValidateInput),
 		Run:   run,
 	}
-)
 
-func init() {
-	rootCmd.AddCommand(addCmd)
+	c.Flags().StringArrayVarP(&arrayTagsInput, "tag", "t", make([]string, 0), "-t foo -t bar")
+	c.Flags().StringSliceVar(&sliceTagsInput, "tags", make([]string, 0), "--tags foo,bar")
 
-	addCmd.Flags().StringArrayVarP(&arrayTagsInput, "tag", "t", make([]string, 0), "-t foo -t bar")
-	addCmd.Flags().StringSliceVar(&sliceTagsInput, "tags", make([]string, 0), "--tags foo,bar")
+	return c
 }
 
 func run(*cobra.Command, []string) {
@@ -38,7 +40,7 @@ func run(*cobra.Command, []string) {
 
 	partition := ""
 
-	for _, e := range sortedTagsMap.GetEntries() {
+	for _, e := range entries.GetEntries() {
 		p := e.GetTagPartition()
 
 		if partition != p {
@@ -86,7 +88,7 @@ func parseAndValidateInput(_ *cobra.Command, args []string) error {
 				return err
 			}
 
-			if err = sortedTagsMap.Add(i); err != nil {
+			if err = entries.Add(i); err != nil {
 				return err
 			}
 		}

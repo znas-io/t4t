@@ -1,11 +1,12 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package main
 
-import "github.com/znas-io/t4t/cmd"
+import (
+	"github.com/znas-io/t4t/cmd/root"
+	"os"
+)
 
 func main() {
-	cmd.Execute()
+	if err := root.NewCommand().Execute(); err != nil {
+		os.Exit(1)
+	}
 }
